@@ -2,10 +2,7 @@ import '../models/patient_model.dart';
 import '../services/supabase_service.dart';
 
 class PatientRepository {
-  final SupabaseService _supabaseService;
-
-  PatientRepository({SupabaseService? supabaseService})
-    : _supabaseService = supabaseService ?? SupabaseService();
+  SupabaseService get _supabaseService => SupabaseService();
 
   Future<Patient?> getPatientById(String pacienteId) async {
     try {

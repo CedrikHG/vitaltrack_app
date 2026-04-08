@@ -24,6 +24,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (!SupabaseService.isInitialized) {
+        _isLoading = false;
+        _errorMessage = 'Servicio de autenticación no disponible';
+        notifyListeners();
+        return false;
+      }
+
       final response = await SupabaseService().client
           .from('pacientes')
           .select()
@@ -53,18 +60,10 @@ class AuthProvider extends ChangeNotifier {
       return false;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = 'Error de conexión';
+      _errorMessage = 'Error de conexión: ${e.toString()}';
       debugPrint('Login error: $e');
-
-      _currentUser = User(
-        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        name: 'Usuario Demo',
-        email: email,
-        createdAt: DateTime.now(),
-      );
-      _isAuthenticated = true;
       notifyListeners();
-      return true;
+      return false;
     }
   }
 
@@ -74,6 +73,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (!SupabaseService.isInitialized) {
+        _isLoading = false;
+        _errorMessage = 'Servicio de autenticación no disponible';
+        notifyListeners();
+        return false;
+      }
+
       final nameParts = name.split(' ');
       final firstName = nameParts.isNotEmpty ? nameParts[0] : name;
       final lastName = nameParts.length > 1
@@ -106,18 +112,10 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = 'Error al registrar usuario';
+      _errorMessage = 'Error al registrar usuario: ${e.toString()}';
       debugPrint('Register error: $e');
-
-      _currentUser = User(
-        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        name: name,
-        email: email,
-        createdAt: DateTime.now(),
-      );
-      _isAuthenticated = true;
       notifyListeners();
-      return true;
+      return false;
     }
   }
 
@@ -159,7 +157,9 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await SupabaseService().client.auth.signOut();
+      if (SupabaseService.isInitialized) {
+        await SupabaseService().client.auth.signOut();
+      }
     } catch (e) {
       debugPrint('Logout error: $e');
     }

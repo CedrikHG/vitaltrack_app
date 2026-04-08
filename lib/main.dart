@@ -15,10 +15,17 @@ import 'presentation/screens/dashboard/main_dashboard_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SupabaseService.initialize(
-    url: SupabaseConstants.url,
-    anonKey: SupabaseConstants.anonKey,
-  );
+  try {
+    await SupabaseService.initialize(
+      url: SupabaseConstants.url,
+      anonKey: SupabaseConstants.anonKey,
+    );
+  } catch (e) {
+    debugPrint('========================================');
+    debugPrint('ERROR FATAL: Falló la inicialización de Supabase');
+    debugPrint('Error: $e');
+    debugPrint('========================================');
+  }
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

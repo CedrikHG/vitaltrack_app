@@ -3,14 +3,8 @@ import '../services/supabase_service.dart';
 import '../services/mock_iot_service.dart';
 
 class VitalsRepository {
-  final SupabaseService _supabaseService;
-  final MockIotService _mockService;
-
-  VitalsRepository({
-    SupabaseService? supabaseService,
-    MockIotService? mockService,
-  }) : _supabaseService = supabaseService ?? SupabaseService(),
-       _mockService = mockService ?? MockIotService();
+  SupabaseService get _supabaseService => SupabaseService();
+  MockIotService get _mockService => MockIotService();
 
   Future<void> saveVitalSigns({
     required String pacienteId,
