@@ -50,6 +50,3 @@ Physical IoT Bluetooth Low Energy (BLE) integration.
 Advanced analytics dashboard for medical professionals (Web Client).
 
 Push notifications for abnormal vital sign alerts.
-
-
-git push
