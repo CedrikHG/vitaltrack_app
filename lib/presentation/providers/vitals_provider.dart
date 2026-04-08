@@ -157,16 +157,11 @@ class VitalsProvider extends ChangeNotifier {
     await _attemptSaveToDatabase();
   }
 
-  Future<void> _attemptSaveToDatabase() async {
+Future<void> _attemptSaveToDatabase() async {
     final pacienteId = _getPatientId();
 
     if (pacienteId == null) {
-      debugPrint(
-        '🛑 ERROR CRÍTICO: No hay pacienteId. No se puede guardar en Supabase.',
-      );
-      debugPrint('   - _patientId local: $_patientId');
-      debugPrint('   - _authProvider: ${_authProvider != null}');
-      debugPrint('   - currentUser: ${_authProvider?.currentUser?.id}');
+      debugPrint('🛑 ERROR CRÍTICO: No hay pacienteId. No se puede guardar en Supabase.');
       return;
     }
 
@@ -175,37 +170,36 @@ class VitalsProvider extends ChangeNotifier {
       return;
     }
 
-    debugPrint(
-      '✅ Intentando guardar en Supabase para el paciente: $pacienteId',
-    );
+    debugPrint('✅ Intentando guardar en Supabase para el paciente: $pacienteId');
 
     try {
-      final heartRateValue = _heartRate?.value ?? 0;
-      final bloodPressureValue = _bloodPressure?.value ?? 0;
-      final bloodPressureSecondary = _bloodPressure?.secondaryValue ?? 0;
-      final spo2Value = _spo2?.value ?? 0;
-      final sleepValue = _sleep?.value ?? 0;
-      final exerciseValue = _exercise?.value ?? 0;
-      final stepsValue = _steps?.value ?? 0;
+      // AQUÍ ESTÁ LA MAGIA: Convertimos a .toInt() los que en la BD son 'integer'
+      final heartRateValue = _heartRate?.value.toInt() ?? 0;
+      final bloodPressureValue = _bloodPressure?.value.toInt() ?? 0;
+      final bloodPressureSecondary = _bloodPressure?.secondaryValue?.toInt() ?? 0;
+      final spo2Value = _spo2?.value.toInt() ?? 0;
+      final sleepValue = _sleep?.value ?? 0.0; // Este se queda double porque en BD es numeric(4,2)
+      final exerciseValue = _exercise?.value.toInt() ?? 0;
+      final stepsValue = _steps?.value.toInt() ?? 0;
 
       debugPrint('📊 Datos a guardar:');
       debugPrint('   - bpm: $heartRateValue');
       debugPrint('   - spo2: $spo2Value');
-      debugPrint('   - pasos: ${stepsValue.toInt()}');
+      debugPrint('   - pasos: $stepsValue');
       debugPrint('   - presion_sistolica: $bloodPressureValue');
       debugPrint('   - presion_diastolica: $bloodPressureSecondary');
       debugPrint('   - sueno: $sleepValue');
-      debugPrint('   - ejercicio_minutos: ${exerciseValue.toInt()}');
+      debugPrint('   - ejercicio_minutos: $exerciseValue');
 
       await SupabaseService().insertVitalSigns(
         pacienteId: pacienteId,
         bpm: heartRateValue,
         spo2: spo2Value,
-        pasos: stepsValue.toInt(),
+        pasos: stepsValue,
         presionSistolica: bloodPressureValue,
         presionDiastolica: bloodPressureSecondary,
         sueno: sleepValue,
-        ejercicioMinutos: exerciseValue.toInt(),
+        ejercicioMinutos: exerciseValue,
       );
 
       debugPrint('✅ Guardado exitoso en Supabase');

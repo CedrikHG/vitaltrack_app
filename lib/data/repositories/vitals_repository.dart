@@ -3,8 +3,14 @@ import '../services/supabase_service.dart';
 import '../services/mock_iot_service.dart';
 
 class VitalsRepository {
-  SupabaseService get _supabaseService => SupabaseService();
-  MockIotService get _mockService => MockIotService();
+  final SupabaseService _supabaseService;
+  final MockIotService _mockService;
+
+  VitalsRepository({
+    SupabaseService? supabaseService,
+    MockIotService? mockService,
+  }) : _supabaseService = supabaseService ?? SupabaseService(),
+       _mockService = mockService ?? MockIotService();
 
   Future<void> saveVitalSigns({
     required String pacienteId,
@@ -18,11 +24,11 @@ class VitalsRepository {
     try {
       await _supabaseService.insertVitalSigns(
         pacienteId: pacienteId,
-        bpm: heartRate.value,
-        spo2: spo2.value,
+        bpm: heartRate.value.toInt(), // AHORA CONVERTIDO A INT
+        spo2: spo2.value.toInt(), // AHORA CONVERTIDO A INT
         pasos: steps.value.toInt(),
-        presionSistolica: bloodPressure.value,
-        presionDiastolica: bloodPressure.secondaryValue ?? 0,
+        presionSistolica: bloodPressure.value.toInt(), // AHORA CONVERTIDO A INT
+        presionDiastolica: (bloodPressure.secondaryValue ?? 0).toInt(), // AHORA CONVERTIDO A INT
         sueno: sleep.value,
         ejercicioMinutos: exercise.value.toInt(),
       );

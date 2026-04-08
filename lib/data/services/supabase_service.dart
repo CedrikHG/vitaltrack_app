@@ -28,13 +28,14 @@ class SupabaseService {
     return Supabase.instance.client;
   }
 
+  // AQUÍ ESTÁ EL CAMBIO: bpm, spo2 y presiones ahora son 'int' para coincidir con la BD
   Future<Map<String, dynamic>> insertVitalSigns({
     required String pacienteId,
-    required double bpm,
-    required double spo2,
+    required int bpm,
+    required int spo2,
     required int pasos,
-    required double presionSistolica,
-    required double presionDiastolica,
+    required int presionSistolica,
+    required int presionDiastolica,
     required double sueno,
     required int ejercicioMinutos,
   }) async {
@@ -49,7 +50,7 @@ class SupabaseService {
           'presion_diastolica': presionDiastolica,
           'sueno': sueno,
           'ejercicio_minutos': ejercicioMinutos,
-          'fecha_registro': DateTime.now().toIso8601String(),
+          // Eliminamos fecha_registro del insert porque Supabase lo hace en automático con "default now()"
         })
         .select()
         .single();
